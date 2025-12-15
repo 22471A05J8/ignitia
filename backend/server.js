@@ -1,34 +1,31 @@
-// Import dependencies
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
 
-// Initialize Express app
+const authRouter = require("./routes/auth");
+
 const app = express();
 
-// Middleware
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 
-// Routes
-const authRouter = require("./routes/auth");
+// ================= ROUTES =================
 app.use("/api/auth", authRouter);
 
-// Root route
-app.get("/", (req, res) => res.send("✅ Backend running successfully"));
+app.get("/", (req, res) => {
+  res.send("✅ Backend running successfully");
+});
 
-// MongoDB connection
-
-
-
+// ================= DATABASE =================
 mongoose
-  .connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 10000,
-    tlsAllowInvalidCertificates: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
-// Start server
+
+// ================= SERVER =================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
