@@ -9,12 +9,11 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// REGISTER
 router.post("/register", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
-    if (!email || !password) {
+    if (!name || !email || !password || !phone) {
       return res.status(400).json({ message: "All fields required" });
     }
 
@@ -23,7 +22,14 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = new User({ email, password });
+    // ❌ NO bcrypt here
+    const user = new User({
+      name,
+      email,
+      password, // plain → model hashes it
+      phone,
+    });
+
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -33,7 +39,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -43,7 +48,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -60,5 +65,6 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 module.exports = router;
