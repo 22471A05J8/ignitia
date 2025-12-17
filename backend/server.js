@@ -3,6 +3,14 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+
+
+
+
+
+
+
+
 const authRouter = require("./routes/auth");
 
 const app = express();
@@ -12,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // ================= ROUTES =================
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("✅ Backend running successfully");
